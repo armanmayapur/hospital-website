@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MediCare Premier Hospital</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  :root {
+    --navy: #1F3A5F;
+    --white: #FFFFFF;
+    --light-blue: #4DA8DA;
+    --gray: #6C7A89;
+    --green: #3CB371;
+    --sky: #E6F2FA;
+    --navy-dark: #152a45;
+    --navy-light: #2a4f7c;
+    --shadow: 0 8px 40px rgba(31,58,95,0.12);
+    --shadow-lg: 0 20px 60px rgba(31,58,95,0.18);
+    --radius: 16px;
+    --radius-sm: 8px;
+    --transition: 0.35s cubic-bezier(.4,0,.2,1);
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; color: var(--navy); background: var(--white); overflow-x:hidden; }
+  h1,h2,h3,h4 { font-family: 'Playfair Display', serif; }
+  a { text-decoration:none; color:inherit; }
+  img { max-width:100%; }
+  .container { max-width:1200px; margin:0 auto; padding:0 24px; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; border-radius:50px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:0.95rem; cursor:pointer; transition:var(--transition); border:none; text-decoration:none; }
+  .btn-primary { background:var(--light-blue); color:var(--white); }
+  .btn-primary:hover { background:var(--navy); transform:translateY(-2px); box-shadow:0 8px 24px rgba(77,168,218,0.4); }
+  .btn-outline { background:transparent; color:var(--white); border:2px solid var(--white); }
+  .btn-outline:hover { background:var(--white); color:var(--navy); }
+  .btn-green { background:var(--green); color:var(--white); }
+  .btn-green:hover { background:#2d9e60; transform:translateY(-2px); box-shadow:0 8px 24px rgba(60,179,113,0.4); }
+  .section-label { font-family:'DM Sans',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--light-blue); margin-bottom:12px; }
+  .section-title { font-size:clamp(2rem,4vw,2.8rem); line-height:1.2; color:var(--navy); margin-bottom:16px; }
+  .section-sub { font-size:1.05rem; color:var(--gray); line-height:1.7; max-width:600px; }
+  .fade-in { opacity:0; transform:translateY(30px); transition:opacity 0.7s ease, transform 0.7s ease; }
+  .fade-in.visible { opacity:1; transform:translateY(0); }
+ 
+  /* ─── NAVBAR ─── */
+  #navbar {
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    padding:0 0;
+    transition:var(--transition);
+  }
+  #navbar.scrolled {
+    background:rgba(31,58,95,0.97);
+    backdrop-filter:blur(12px);
+    box-shadow:0 4px 24px rgba(0,0,0,0.15);
+  }
+  .nav-inner {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 24px; max-width:1200px; margin:0 auto;
+  }
+  .nav-logo { display:flex; align-items:center; gap:10px; color:var(--white); font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:700; }
+  .nav-logo .logo-icon { width:38px; height:38px; background:var(--light-blue); border-radius:10px; display:grid; place-items:center; font-size:1.1rem; }
+  .nav-links { display:flex; gap:32px; list-style:none; }
+  .nav-links a { color:rgba(255,255,255,0.85); font-size:0.92rem; font-weight:500; transition:var(--transition); position:relative; padding-bottom:4px; }
+  .nav-links a::after { content:''; position:absolute; bottom:0; left:0; width:0; height:2px; background:var(--light-blue); transition:var(--transition); }
+  .nav-links a:hover { color:var(--white); }
+  .nav-links a:hover::after { width:100%; }
+  .nav-cta { display:flex; align-items:center; gap:12px; }
+  .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:6px; }
+  .hamburger span { width:24px; height:2px; background:var(--white); border-radius:2px; transition:var(--transition); }
+  .mobile-menu { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:var(--navy-dark); z-index:999; flex-direction:column; align-items:center; justify-content:center; gap:32px; }
+  .mobile-menu.open { display:flex; }
+  .mobile-menu a { color:var(--white); font-size:1.4rem; font-family:'Playfair Display',serif; }
+ 
+  /* ─── HERO SLIDER ─── */
+  #hero {
+    height:100vh; min-height:600px; position:relative; overflow:hidden;
+  }
+  .slide {
+    position:absolute; inset:0;
+    opacity:0; transition:opacity 1.2s ease;
+    display:flex; align-items:center;
+  }
+  .slide.active { opacity:1; z-index:1; }
+  .slide-bg {
+    position:absolute; inset:0; background-size:cover; background-position:center;
+    transform:scale(1.05);
+    transition:transform 7s ease;
+  }
+  .slide.active .slide-bg { transform:scale(1); }
+  .slide-overlay { position:absolute; inset:0; background:linear-gradient(110deg, rgba(31,58,95,0.88) 0%, rgba(31,58,95,0.45) 60%, transparent 100%); }
+  .slide-content { position:relative; z-index:2; padding:0 24px; max-width:1200px; margin:0 auto; width:100%; }
+  .slide-tag { display:inline-flex; align-items:center; gap:8px; background:rgba(77,168,218,0.2); border:1px solid rgba(77,168,218,0.5); color:var(--light-blue); font-size:0.8rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:8px 16px; border-radius:50px; margin-bottom:20px; }
+  .slide-title { font-size:clamp(2.2rem,6vw,4rem); color:var(--white); line-height:1.15; max-width:620px; margin-bottom:20px; }
+  .slide-desc { font-size:1.1rem; color:rgba(255,255,255,0.8); max-width:500px; line-height:1.7; margin-bottom:36px; }
+  .slide-actions { display:flex; gap:16px; flex-wrap:wrap; }
+  .hero-stats { position:absolute; bottom:40px; left:50%; transform:translateX(-50%); z-index:2; display:flex; gap:0; background:rgba(255,255,255,0.08); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.12); border-radius:20px; overflow:hidden; }
+  .stat { padding:20px 36px; text-align:center; border-right:1px solid rgba(255,255,255,0.1); }
+  .stat:last-child { border-right:none; }
+  .stat-num { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; color:var(--white); }
+  .stat-lbl { font-size:0.78rem; color:rgba(255,255,255,0.65); margin-top:2px; text-transform:uppercase; letter-spacing:1px; }
+  .slider-nav { position:absolute; bottom:130px; right:40px; z-index:3; display:flex; gap:10px; }
+  .slider-btn { width:44px; height:44px; border-radius:50%; border:2px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); color:var(--white); cursor:pointer; transition:var(--transition); display:grid; place-items:center; backdrop-filter:blur(6px); font-size:0.95rem; }
+  .slider-btn:hover { background:var(--light-blue); border-color:var(--light-blue); }
+  .slider-dots { position:absolute; bottom:140px; left:50%; transform:translateX(-50%); z-index:3; display:flex; gap:8px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.4); cursor:pointer; transition:var(--transition); }
+  .dot.active { width:28px; border-radius:4px; background:var(--light-blue); }
+ 
+  /* ─── SERVICES ─── */
+  #services { padding:100px 0; background:var(--white); }
+  .services-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:24px; margin-top:60px; }
+  .service-card {
+    background:var(--white); border-radius:var(--radius); padding:36px 28px;
+    border:1px solid rgba(77,168,218,0.15);
+    transition:var(--transition); cursor:pointer; position:relative; overflow:hidden;
+  }
+  .service-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--sky),rgba(77,168,218,0.08)); opacity:0; transition:var(--transition); }
+  .service-card:hover { transform:translateY(-8px); box-shadow:var(--shadow-lg); border-color:var(--light-blue); }
+  .service-card:hover::before { opacity:1; }
+  .service-icon { width:60px; height:60px; border-radius:16px; background:var(--sky); display:grid; place-items:center; font-size:1.5rem; color:var(--light-blue); margin-bottom:20px; transition:var(--transition); position:relative; }
+  .service-card:hover .service-icon { background:var(--light-blue); color:var(--white); transform:scale(1.1); }
+  .service-card h3 { font-size:1.15rem; margin-bottom:10px; color:var(--navy); position:relative; }
+  .service-card p { font-size:0.92rem; color:var(--gray); line-height:1.65; position:relative; }
+  .service-arrow { position:absolute; top:28px; right:24px; width:32px; height:32px; border-radius:50%; background:var(--sky); display:grid; place-items:center; color:var(--light-blue); font-size:0.85rem; transition:var(--transition); }
+  .service-card:hover .service-arrow { background:var(--light-blue); color:var(--white); transform:rotate(-45deg); }
+ 
+  /* ─── ABOUT ─── */
+  #about { padding:100px 0; background:var(--sky); }
+  .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+  .about-img-wrap { position:relative; }
+  .about-img-main { width:100%; border-radius:24px; height:480px; object-fit:cover; display:block; background:linear-gradient(135deg,var(--navy-light),var(--light-blue)); overflow:hidden; }
+  .about-img-main-inner { width:100%; height:100%; background:linear-gradient(135deg,#2a4f7c 0%,#4DA8DA 100%); display:flex; align-items:center; justify-content:center; font-size:6rem; color:rgba(255,255,255,0.3); }
+  .about-badge { position:absolute; bottom:-20px; right:-20px; background:var(--white); border-radius:16px; padding:20px 24px; box-shadow:var(--shadow); text-align:center; min-width:130px; }
+  .about-badge-num { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:700; color:var(--navy); }
+  .about-badge-text { font-size:0.78rem; color:var(--gray); font-weight:500; }
+  .about-badge2 { position:absolute; top:20px; left:-20px; background:var(--navy); border-radius:16px; padding:16px 20px; box-shadow:var(--shadow); display:flex; align-items:center; gap:10px; color:var(--white); }
+  .about-badge2 .icon { width:36px; height:36px; background:var(--light-blue); border-radius:10px; display:grid; place-items:center; font-size:1rem; }
+  .about-badge2-text { font-size:0.78rem; opacity:0.7; }
+  .about-badge2-num { font-weight:700; font-size:1.05rem; }
+  .about-features { margin-top:32px; display:flex; flex-direction:column; gap:16px; }
+  .about-feature { display:flex; align-items:flex-start; gap:14px; }
+  .feat-icon { width:44px; height:44px; min-width:44px; border-radius:12px; background:var(--white); display:grid; place-items:center; color:var(--green); font-size:1rem; box-shadow:0 4px 12px rgba(60,179,113,0.15); }
+  .feat-text h4 { font-size:0.95rem; color:var(--navy); margin-bottom:3px; }
+  .feat-text p { font-size:0.85rem; color:var(--gray); line-height:1.5; }
+ 
+  /* ─── APPOINTMENT ─── */
+  #appointment { padding:100px 0; background:var(--navy); position:relative; overflow:hidden; }
+  #appointment::before { content:''; position:absolute; top:-100px; right:-100px; width:500px; height:500px; border-radius:50%; background:rgba(77,168,218,0.08); pointer-events:none; }
+  .appt-grid { display:grid; grid-template-columns:1fr 1.4fr; gap:80px; align-items:start; }
+  .appt-info h2 { color:var(--white); margin-bottom:16px; }
+  .appt-info .section-sub { color:rgba(255,255,255,0.6); }
+  .appt-contact { margin-top:40px; display:flex; flex-direction:column; gap:16px; }
+  .appt-item { display:flex; align-items:center; gap:14px; color:var(--white); }
+  .appt-item .icon { width:44px; height:44px; border-radius:12px; background:rgba(77,168,218,0.15); display:grid; place-items:center; color:var(--light-blue); font-size:1rem; }
+  .appt-item-text small { font-size:0.75rem; color:rgba(255,255,255,0.5); }
+  .appt-item-text span { display:block; font-weight:500; font-size:0.95rem; }
+  .appt-form { background:var(--white); border-radius:24px; padding:40px; box-shadow:var(--shadow-lg); }
+  .appt-form h3 { font-size:1.4rem; color:var(--navy); margin-bottom:28px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+  .form-group label { font-size:0.82rem; font-weight:600; color:var(--navy); letter-spacing:0.5px; }
+  .form-group input, .form-group select, .form-group textarea {
+    padding:12px 16px; border:1.5px solid rgba(31,58,95,0.12); border-radius:var(--radius-sm);
+    font-family:'DM Sans',sans-serif; font-size:0.92rem; color:var(--navy);
+    transition:var(--transition); outline:none; background:var(--white);
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--light-blue); box-shadow:0 0 0 3px rgba(77,168,218,0.12); }
+  .form-group textarea { resize:none; height:90px; }
+  .form-success { display:none; text-align:center; padding:24px; }
+  .form-success i { font-size:3rem; color:var(--green); margin-bottom:12px; }
+  .form-success h4 { color:var(--navy); font-size:1.2rem; margin-bottom:8px; }
+  .form-success p { color:var(--gray); font-size:0.9rem; }
+ 
+  /* ─── DOCTORS ─── */
+  #doctors { padding:100px 0; background:var(--white); }
+  .doctors-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:28px; margin-top:60px; }
+  .doctor-card { border-radius:var(--radius); overflow:hidden; background:var(--white); border:1px solid rgba(31,58,95,0.08); transition:var(--transition); }
+  .doctor-card:hover { transform:translateY(-8px); box-shadow:var(--shadow-lg); }
+  .doctor-img { height:280px; position:relative; overflow:hidden; }
+  .doctor-img-inner { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:5rem; }
+  .doctor-img-inner.d1 { background:linear-gradient(135deg,#c8dff0,#e6f2fa); }
+  .doctor-img-inner.d2 { background:linear-gradient(135deg,#c8e8d5,#e6f5ec); }
+  .doctor-img-inner.d3 { background:linear-gradient(135deg,#d5c8f0,#ede6fa); }
+  .doctor-img-inner.d4 { background:linear-gradient(135deg,#f0d5c8,#faeee6); }
+  .doctor-overlay { position:absolute; inset:0; background:linear-gradient(0deg,rgba(31,58,95,0.7) 0%,transparent 50%); opacity:0; transition:var(--transition); display:flex; align-items:flex-end; justify-content:center; padding-bottom:20px; gap:10px; }
+  .doctor-card:hover .doctor-overlay { opacity:1; }
+  .doc-social { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); display:grid; place-items:center; color:var(--white); font-size:0.85rem; transition:var(--transition); }
+  .doc-social:hover { background:var(--light-blue); border-color:var(--light-blue); }
+  .doctor-info { padding:20px; }
+  .doctor-info h3 { font-size:1.05rem; color:var(--navy); margin-bottom:4px; }
+  .doctor-info .spec { font-size:0.82rem; color:var(--light-blue); font-weight:600; margin-bottom:10px; }
+  .doctor-rating { display:flex; align-items:center; gap:6px; }
+  .stars { color:#f59e0b; font-size:0.75rem; }
+  .doctor-rating span { font-size:0.78rem; color:var(--gray); }
+ 
+  /* ─── TESTIMONIALS ─── */
+  #testimonials { padding:100px 0; background:var(--sky); }
+  .testi-header { text-align:center; margin-bottom:60px; }
+  .testi-header .section-sub { margin:0 auto; }
+  .testi-slider-wrap { position:relative; overflow:hidden; }
+  .testi-track { display:flex; transition:transform 0.7s cubic-bezier(.4,0,.2,1); }
+  .testi-card { min-width:100%; padding:0 20px; }
+  .testi-inner { background:var(--white); border-radius:24px; padding:48px; box-shadow:var(--shadow); max-width:760px; margin:0 auto; position:relative; }
+  .testi-inner::before { content:'\201C'; position:absolute; top:20px; left:36px; font-size:6rem; line-height:1; color:var(--sky); font-family:'Playfair Display',serif; pointer-events:none; }
+  .testi-text { font-size:1.1rem; color:var(--gray); line-height:1.8; margin-bottom:28px; position:relative; z-index:1; }
+  .testi-author { display:flex; align-items:center; gap:16px; }
+  .testi-avatar { width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:700; color:var(--white); }
+  .testi-author-info h4 { font-size:0.95rem; color:var(--navy); }
+  .testi-author-info span { font-size:0.8rem; color:var(--gray); }
+  .testi-controls { display:flex; align-items:center; justify-content:center; gap:16px; margin-top:40px; }
+  .testi-btn { width:44px; height:44px; border-radius:50%; border:2px solid rgba(31,58,95,0.15); background:var(--white); color:var(--navy); cursor:pointer; transition:var(--transition); display:grid; place-items:center; }
+  .testi-btn:hover { background:var(--light-blue); border-color:var(--light-blue); color:var(--white); }
+  .testi-dots { display:flex; gap:8px; }
+  .testi-dot { width:8px; height:8px; border-radius:50%; background:rgba(31,58,95,0.2); cursor:pointer; transition:var(--transition); }
+  .testi-dot.active { width:24px; border-radius:4px; background:var(--light-blue); }
+ 
+  /* ─── CONTACT ─── */
+  #contact { padding:100px 0; background:var(--white); }
+  .contact-grid { display:grid; grid-template-columns:1fr 1.5fr; gap:60px; align-items:start; }
+  .contact-info h2 { margin-bottom:16px; }
+  .contact-cards { margin-top:36px; display:flex; flex-direction:column; gap:16px; }
+  .contact-card { display:flex; align-items:center; gap:16px; padding:20px; border-radius:var(--radius-sm); border:1px solid rgba(31,58,95,0.08); transition:var(--transition); }
+  .contact-card:hover { border-color:var(--light-blue); background:var(--sky); }
+  .contact-card .icon { width:48px; height:48px; min-width:48px; border-radius:12px; background:var(--sky); display:grid; place-items:center; font-size:1.1rem; color:var(--light-blue); }
+  .contact-card-text h4 { font-size:0.85rem; font-weight:700; color:var(--navy); margin-bottom:2px; }
+  .contact-card-text p { font-size:0.85rem; color:var(--gray); }
+  .map-wrap { border-radius:20px; overflow:hidden; box-shadow:var(--shadow); height:420px; background:var(--sky); position:relative; }
+  .map-wrap iframe { width:100%; height:100%; border:none; }
+  .map-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; color:var(--gray); }
+  .map-placeholder i { font-size:3rem; color:var(--light-blue); }
+ 
+  /* ─── FOOTER ─── */
+  footer { background:var(--navy-dark); color:rgba(255,255,255,0.7); padding:80px 0 0; }
+  .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1.2fr; gap:60px; padding-bottom:60px; }
+  .footer-brand .nav-logo { margin-bottom:16px; }
+  .footer-brand p { font-size:0.9rem; line-height:1.7; max-width:260px; }
+  .footer-social { display:flex; gap:10px; margin-top:24px; }
+  .footer-social a { width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,0.06); display:grid; place-items:center; color:rgba(255,255,255,0.5); font-size:0.9rem; transition:var(--transition); }
+  .footer-social a:hover { background:var(--light-blue); color:var(--white); }
+  .footer-col h4 { color:var(--white); font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.9rem; letter-spacing:1px; text-transform:uppercase; margin-bottom:20px; }
+  .footer-links { list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .footer-links a { font-size:0.88rem; transition:var(--transition); display:flex; align-items:center; gap:6px; }
+  .footer-links a:hover { color:var(--light-blue); padding-left:4px; }
+  .footer-hours { display:flex; flex-direction:column; gap:10px; }
+  .footer-hour { display:flex; justify-content:space-between; font-size:0.85rem; }
+  .footer-hour span:last-child { color:var(--light-blue); font-weight:600; }
+  .footer-bottom { border-top:1px solid rgba(255,255,255,0.06); padding:24px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+  .footer-bottom p, .footer-bottom a { font-size:0.82rem; }
+  .back-top { position:fixed; bottom:30px; right:30px; width:46px; height:46px; background:var(--light-blue); border-radius:50%; display:grid; place-items:center; color:var(--white); cursor:pointer; box-shadow:0 8px 20px rgba(77,168,218,0.4); opacity:0; pointer-events:none; transition:var(--transition); z-index:500; font-size:1rem; }
+  .back-top.visible { opacity:1; pointer-events:auto; }
+  .back-top:hover { background:var(--navy); transform:translateY(-3px); }
+ 
+  /* ─── RESPONSIVE ─── */
+  @media(max-width:1024px){
+    .about-grid, .appt-grid, .contact-grid { grid-template-columns:1fr; gap:40px; }
+    .footer-grid { grid-template-columns:1fr 1fr; gap:40px; }
+    .about-badge { right:0; }
+    .about-badge2 { left:0; }
+  }
+  @media(max-width:768px){
+    .nav-links, .nav-cta .btn { display:none; }
+    .hamburger { display:flex; }
+    .hero-stats { position:relative; bottom:auto; left:auto; transform:none; margin:20px auto 0; flex-wrap:wrap; max-width:90%; }
+    .stat { padding:14px 20px; }
+    .form-row { grid-template-columns:1fr; }
+    .slide-title { font-size:2rem; }
+    .footer-grid { grid-template-columns:1fr; gap:32px; }
+    .footer-bottom { flex-direction:column; text-align:center; }
+    .slider-nav { right:16px; bottom:auto; top:50%; transform:translateY(-50%); flex-direction:column; }
+    #hero { height:auto; min-height:100vh; padding-bottom:40px; }
+    .slide-content { padding-top:100px; }
+  }
+</style>
+</head>
+<body>
+ 
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="logo-icon"><i class="fas fa-plus"></i></div>
+      MediCare Premier
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#doctors">Doctors</a></li>
+      <li><a href="#appointment">Appointment</a></li>
+      <li><a href="#testimonials">Reviews</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="tel:+911234567890" class="btn btn-primary" style="padding:10px 20px;font-size:0.85rem;">
+        <i class="fas fa-phone"></i> Emergency
+      </a>
+    </div>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+ 
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services" onclick="closeMobile()">Services</a>
+  <a href="#about" onclick="closeMobile()">About Us</a>
+  <a href="#doctors" onclick="closeMobile()">Our Doctors</a>
+  <a href="#appointment" onclick="closeMobile()">Appointment</a>
+  <a href="#testimonials" onclick="closeMobile()">Reviews</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+</div>
+ 
+<!-- HERO -->
+<section id="hero">
+  <div class="slide active" id="slide0">
+    <div class="slide-bg" style="background-image:url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600&q=80')"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content container">
+      <div class="slide-tag"><i class="fas fa-circle" style="font-size:0.5rem;"></i> World-Class Healthcare</div>
+      <h1 class="slide-title">Your Health, Our <em>Sacred</em> Commitment</h1>
+      <p class="slide-desc">Delivering compassionate, cutting-edge medical care to families across the region for over 25 years.</p>
+      <div class="slide-actions">
+        <a href="#appointment" class="btn btn-primary"><i class="fas fa-calendar-alt"></i> Book Appointment</a>
+        <a href="#services" class="btn btn-outline"><i class="fas fa-stethoscope"></i> Our Services</a>
+      </div>
+    </div>
+  </div>
+  <div class="slide" id="slide1">
+    <div class="slide-bg" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80')"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content container">
+      <div class="slide-tag"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Advanced Technology</div>
+      <h1 class="slide-title">State-of-the-Art <em>Diagnostics</em> & Treatment</h1>
+      <p class="slide-desc">Equipped with the latest medical technology and a team of 200+ specialist doctors ready to serve you.</p>
+      <div class="slide-actions">
+        <a href="#doctors" class="btn btn-primary"><i class="fas fa-user-md"></i> Meet Our Doctors</a>
+        <a href="#about" class="btn btn-outline"><i class="fas fa-info-circle"></i> Learn More</a>
+      </div>
+    </div>
+  </div>
+  <div class="slide" id="slide2">
+    <div class="slide-bg" style="background-image:url('https://images.unsplash.com/photo-1551076805-e1869033e561?w=1600&q=80')"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content container">
+      <div class="slide-tag"><i class="fas fa-circle" style="font-size:0.5rem;"></i> 24/7 Emergency Care</div>
+      <h1 class="slide-title">Always Here When <em>You Need</em> Us Most</h1>
+      <p class="slide-desc">Our emergency department operates round the clock with expert trauma surgeons and critical care specialists.</p>
+      <div class="slide-actions">
+        <a href="tel:+911234567890" class="btn btn-primary"><i class="fas fa-ambulance"></i> Emergency: 1234-5678</a>
+        <a href="#contact" class="btn btn-outline"><i class="fas fa-map-marker-alt"></i> Find Us</a>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="slider-dots" id="sliderDots">
+    <div class="dot active" onclick="goToSlide(0)"></div>
+    <div class="dot" onclick="goToSlide(1)"></div>
+    <div class="dot" onclick="goToSlide(2)"></div>
+  </div>
+  <div class="slider-nav">
+    <button class="slider-btn" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+    <button class="slider-btn" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
+  </div>
+ 
+  <div class="hero-stats container">
+    <div class="stat"><div class="stat-num">25+</div><div class="stat-lbl">Years Experience</div></div>
+    <div class="stat"><div class="stat-num">200+</div><div class="stat-lbl">Expert Doctors</div></div>
+    <div class="stat"><div class="stat-num">50K+</div><div class="stat-lbl">Happy Patients</div></div>
+    <div class="stat"><div class="stat-num">40+</div><div class="stat-lbl">Departments</div></div>
+  </div>
+</section>
+ 
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="fade-in">
+      <div class="section-label">What We Offer</div>
+      <h2 class="section-title">Comprehensive Medical <br>Services</h2>
+      <p class="section-sub">From routine checkups to complex surgeries, we cover every aspect of your health journey.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card fade-in">
+        <div class="service-icon"><i class="fas fa-heartbeat"></i></div>
+        <div class="service-arrow"><i class="fas fa-arrow-right"></i></div>
+        <h3>Cardiology</h3>
+        <p>Advanced heart care with state-of-the-art diagnostic tools, interventional procedures, and rehabilitation programs.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon"><i class="fas fa-brain"></i></div>
+        <div class="service-arrow"><i class="fas fa-arrow-right"></i></div>
+        <h3>Neurology</h3>
+        <p>Specialized diagnosis and treatment for disorders of the brain, spinal cord, and nervous system.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon"><i class="fas fa-bone"></i></div>
+        <div class="service-arrow"><i class="fas fa-arrow-right"></i></div>
+        <h3>Orthopedics</h3>
+        <p>Expert bone, joint, and muscle care—from sports injuries to joint replacements and spine surgery.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon"><i class="fas fa-baby"></i></div>
+        <div class="service-arrow"><i class="fas fa-arrow-right"></i></div>
+        <h3>Pediatrics</h3>
+        <p>Dedicated child healthcare from newborns through adolescence with a nurturing, family-centered approach.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon"><i class="fas fa-eye"></i></div>
+        <div class="service-arrow"><i class="fas fa-arrow-right"></i></div>
+        <h3>Ophthalmology</h3>
+        <p>Complete eye care including LASIK, cataract surgery, glaucoma treatment, and routine vision care.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon"><i class="fas fa-radiation-alt"></i></div>
+        <div class="service-arrow"><i class="fas fa-arrow-right"></i></div>
+        <h3>Oncology</h3>
+        <p>Comprehensive cancer care with cutting-edge chemotherapy, radiation, and surgical oncology services.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon"><i class="fas fa-lungs"></i></div>
+        <div class="service-arrow"><i class="fas fa-arrow-right"></i></div>
+        <h3>Pulmonology</h3>
+        <p>Expert care for respiratory conditions including asthma, COPD, sleep disorders, and pulmonary fibrosis.</p>
+      </div>
+      <div class="service-card fade-in">
+        <div class="service-icon"><i class="fas fa-microscope"></i></div>
+        <div class="service-arrow"><i class="fas fa-arrow-right"></i></div>
+        <h3>Pathology & Lab</h3>
+        <p>Advanced diagnostics with same-day results, NABL accredited lab services, and home sample collection.</p>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img-wrap fade-in">
+        <div class="about-img-main">
+          <div class="about-img-main-inner">
+            <i class="fas fa-hospital" style="color:rgba(255,255,255,0.35);"></i>
+          </div>
+        </div>
+        <div class="about-badge">
+          <div class="about-badge-num">25+</div>
+          <div class="about-badge-text">Years of <br>Excellence</div>
+        </div>
+        <div class="about-badge2">
+          <div class="icon"><i class="fas fa-award"></i></div>
+          <div>
+            <div class="about-badge2-num">ISO 9001:2015</div>
+            <div class="about-badge2-text">Certified Hospital</div>
+          </div>
+        </div>
+      </div>
+      <div class="fade-in">
+        <div class="section-label">About Us</div>
+        <h2 class="section-title">A Legacy of Healing, A Future of Hope</h2>
+        <p class="section-sub">Founded in 1999, MediCare Premier has grown into one of the region's most trusted multi-specialty hospitals, combining clinical excellence with genuine compassion for every patient.</p>
+        <div class="about-features">
+          <div class="about-feature">
+            <div class="feat-icon"><i class="fas fa-user-md"></i></div>
+            <div class="feat-text">
+              <h4>Expert Medical Team</h4>
+              <p>Over 200 board-certified specialists across 40+ departments, dedicated to delivering the best outcomes.</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="feat-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="feat-text">
+              <h4>Patient Safety First</h4>
+              <p>Rigorous safety protocols, infection control standards, and continuous quality improvement programs.</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="feat-icon"><i class="fas fa-clock"></i></div>
+            <div class="feat-text">
+              <h4>24/7 Emergency Services</h4>
+              <p>Round-the-clock emergency care with trauma units, ICU, and rapid response teams always on standby.</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="feat-icon"><i class="fas fa-flask"></i></div>
+            <div class="feat-text">
+              <h4>Research & Innovation</h4>
+              <p>Partnered with leading medical universities and research institutes to bring cutting-edge treatments to you.</p>
+            </div>
+          </div>
+        </div>
+        <a href="#appointment" class="btn btn-primary" style="margin-top:32px;">
+          <i class="fas fa-calendar-check"></i> Book Your Visit
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- APPOINTMENT -->
+<section id="appointment">
+  <div class="container">
+    <div class="appt-grid">
+      <div class="fade-in">
+        <div class="section-label" style="color:var(--light-blue);">Book a Visit</div>
+        <h2 class="section-title" style="color:var(--white);">Schedule Your Appointment Today</h2>
+        <p class="section-sub">Choose your specialist, pick a convenient time, and we'll take care of the rest. Easy, fast, and hassle-free.</p>
+        <div class="appt-contact">
+          <div class="appt-item">
+            <div class="icon"><i class="fas fa-phone"></i></div>
+            <div class="appt-item-text">
+              <small>Emergency Hotline</small>
+              <span>+91 1234-567-890</span>
+            </div>
+          </div>
+          <div class="appt-item">
+            <div class="icon"><i class="fas fa-envelope"></i></div>
+            <div class="appt-item-text">
+              <small>Email Us</small>
+              <span>care@medicaepremier.com</span>
+            </div>
+          </div>
+          <div class="appt-item">
+            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="appt-item-text">
+              <small>Our Location</small>
+              <span>12 Healing Avenue, Jaipur, Rajasthan</span>
+            </div>
+          </div>
+          <div class="appt-item">
+            <div class="icon"><i class="fas fa-clock"></i></div>
+            <div class="appt-item-text">
+              <small>Working Hours</small>
+              <span>Mon–Sat: 8AM–8PM &nbsp;|&nbsp; 24/7 Emergency</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="appt-form fade-in" id="apptFormWrap">
+        <h3>Request Appointment</h3>
+        <div id="apptForm">
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" placeholder="Aarav" required></div>
+            <div class="form-group"><label>Last Name</label><input type="text" placeholder="Sharma" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Phone Number</label><input type="tel" placeholder="+91 98765 43210" required></div>
+            <div class="form-group"><label>Email Address</label><input type="email" placeholder="you@example.com"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Department</label>
+              <select>
+                <option value="">Select Department</option>
+                <option>Cardiology</option><option>Neurology</option><option>Orthopedics</option>
+                <option>Pediatrics</option><option>Ophthalmology</option><option>Oncology</option>
+                <option>General Medicine</option><option>Gynecology</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Preferred Date</label><input type="date" required></div>
+          </div>
+          <div class="form-group"><label>Message (Optional)</label><textarea placeholder="Briefly describe your symptoms or reason for visit..."></textarea></div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;padding:16px;" onclick="submitForm()">
+            <i class="fas fa-paper-plane"></i> Confirm Appointment
+          </button>
+        </div>
+        <div class="form-success" id="formSuccess">
+          <i class="fas fa-check-circle"></i>
+          <h4>Appointment Requested!</h4>
+          <p>We'll contact you within 2 hours to confirm your appointment. Thank you for choosing MediCare Premier.</p>
+          <button class="btn btn-primary" style="margin-top:16px;" onclick="resetForm()">Book Another</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- DOCTORS -->
+<section id="doctors">
+  <div class="container">
+    <div style="text-align:center" class="fade-in">
+      <div class="section-label">Our Specialists</div>
+      <h2 class="section-title">Meet Our Expert Doctors</h2>
+      <p class="section-sub" style="margin:0 auto;">Our physicians combine decades of expertise with genuine compassion to deliver the highest standard of care.</p>
+    </div>
+    <div class="doctors-grid">
+      <div class="doctor-card fade-in">
+        <div class="doctor-img">
+          <div class="doctor-img-inner d1"><i class="fas fa-user-md"></i></div>
+          <div class="doctor-overlay">
+            <a href="#" class="doc-social"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="doc-social"><i class="fas fa-envelope"></i></a>
+            <a href="#" class="doc-social"><i class="fas fa-phone"></i></a>
+          </div>
+        </div>
+        <div class="doctor-info">
+          <h3>Dr. Priya Nair</h3>
+          <div class="spec">Senior Cardiologist</div>
+          <div class="doctor-rating">
+            <div class="stars">★★★★★</div>
+            <span>4.9 (312 reviews)</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card fade-in">
+        <div class="doctor-img">
+          <div class="doctor-img-inner d2"><i class="fas fa-user-md"></i></div>
+          <div class="doctor-overlay">
+            <a href="#" class="doc-social"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="doc-social"><i class="fas fa-envelope"></i></a>
+            <a href="#" class="doc-social"><i class="fas fa-phone"></i></a>
+          </div>
+        </div>
+        <div class="doctor-info">
+          <h3>Dr. Rahul Mehta</h3>
+          <div class="spec">Neurosurgeon</div>
+          <div class="doctor-rating">
+            <div class="stars">★★★★★</div>
+            <span>4.8 (278 reviews)</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card fade-in">
+        <div class="doctor-img">
+          <div class="doctor-img-inner d3"><i class="fas fa-user-md"></i></div>
+          <div class="doctor-overlay">
+            <a href="#" class="doc-social"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="doc-social"><i class="fas fa-envelope"></i></a>
+            <a href="#" class="doc-social"><i class="fas fa-phone"></i></a>
+          </div>
+        </div>
+        <div class="doctor-info">
+          <h3>Dr. Sunita Kapoor</h3>
+          <div class="spec">Pediatric Specialist</div>
+          <div class="doctor-rating">
+            <div class="stars">★★★★★</div>
+            <span>4.9 (401 reviews)</span>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-card fade-in">
+        <div class="doctor-img">
+          <div class="doctor-img-inner d4"><i class="fas fa-user-md"></i></div>
+          <div class="doctor-overlay">
+            <a href="#" class="doc-social"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="doc-social"><i class="fas fa-envelope"></i></a>
+            <a href="#" class="doc-social"><i class="fas fa-phone"></i></a>
+          </div>
+        </div>
+        <div class="doctor-info">
+          <h3>Dr. Arjun Verma</h3>
+          <div class="spec">Orthopedic Surgeon</div>
+          <div class="doctor-rating">
+            <div class="stars">★★★★½</div>
+            <span>4.7 (195 reviews)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="container">
+    <div class="testi-header fade-in">
+      <div class="section-label">Patient Stories</div>
+      <h2 class="section-title">What Our Patients Say</h2>
+      <p class="section-sub">Real stories from real patients. Your trust is our greatest achievement.</p>
+    </div>
+    <div class="testi-slider-wrap fade-in">
+      <div class="testi-track" id="testiTrack">
+        <div class="testi-card">
+          <div class="testi-inner">
+            <p class="testi-text">"After my cardiac surgery at MediCare Premier, I can honestly say I've been given a second chance at life. The care, professionalism, and kindness of every single staff member—from Dr. Nair to the ward nurses—was extraordinary."</p>
+            <div class="testi-author">
+              <div class="testi-avatar" style="background:linear-gradient(135deg,var(--light-blue),var(--navy));">RK</div>
+              <div class="testi-author-info"><h4>Ramesh Kumar</h4><span>Cardiac Patient, March 2025</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-inner">
+            <p class="testi-text">"Bringing my newborn here was the best decision we made. The NICU team was phenomenal. Dr. Kapoor and her team's expertise and genuine warmth made a terrifying situation bearable. Our baby is now perfectly healthy!"</p>
+            <div class="testi-author">
+              <div class="testi-avatar" style="background:linear-gradient(135deg,var(--green),#2d9e60);">AS</div>
+              <div class="testi-author-info"><h4>Ananya Singh</h4><span>Parent, NICU Unit, January 2025</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-inner">
+            <p class="testi-text">"I was scheduled for a complex knee replacement and was very anxious. Dr. Verma walked me through every step, answered every question, and the surgery went flawlessly. I was walking within 48 hours. Truly world-class!"</p>
+            <div class="testi-author">
+              <div class="testi-avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706);">VP</div>
+              <div class="testi-author-info"><h4>Vijay Patil</h4><span>Orthopedic Patient, December 2024</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-inner">
+            <p class="testi-text">"The emergency team responded within minutes of my husband's stroke. Their quick action and expertise in the neurology unit saved his life and minimized long-term damage. We are forever grateful to this incredible hospital."</p>
+            <div class="testi-author">
+              <div class="testi-avatar" style="background:linear-gradient(135deg,#ec4899,#be185d);">MR</div>
+              <div class="testi-author-info"><h4>Meena Raj</h4><span>Emergency Care Family, October 2024</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-controls">
+      <button class="testi-btn" onclick="testiPrev()"><i class="fas fa-chevron-left"></i></button>
+      <div class="testi-dots" id="testiDots"></div>
+      <button class="testi-btn" onclick="testiNext()"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+</section>
+ 
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="fade-in">
+        <div class="section-label">Find Us</div>
+        <h2 class="section-title">Get in Touch With Us</h2>
+        <p class="section-sub">We're here to help. Reach out through any of the channels below or visit us in person.</p>
+        <div class="contact-cards">
+          <div class="contact-card">
+            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="contact-card-text">
+              <h4>Our Address</h4>
+              <p>12 Healing Avenue, Malviya Nagar, Jaipur, Rajasthan 302017</p>
+            </div>
+          </div>
+          <div class="contact-card">
+            <div class="icon"><i class="fas fa-phone-alt"></i></div>
+            <div class="contact-card-text">
+              <h4>Phone Numbers</h4>
+              <p>+91 1234-567-890 (General) &nbsp;|&nbsp; +91 9876-543-210 (Emergency)</p>
+            </div>
+          </div>
+          <div class="contact-card">
+            <div class="icon"><i class="fas fa-envelope"></i></div>
+            <div class="contact-card-text">
+              <h4>Email Addresses</h4>
+              <p>care@medicaepremier.com &nbsp;|&nbsp; appointments@medicaepremier.com</p>
+            </div>
+          </div>
+          <div class="contact-card">
+            <div class="icon"><i class="fas fa-clock"></i></div>
+            <div class="contact-card-text">
+              <h4>Working Hours</h4>
+              <p>Mon–Fri: 8AM–8PM &nbsp;|&nbsp; Sat: 9AM–5PM &nbsp;|&nbsp; Emergency: 24/7</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="map-wrap fade-in">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.8099999999995!2d75.7872599!3d26.8704699!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396db540fba51c5d%3A0xf3b2dea2f8e20aab!2sMalviya%20Nagar%2C%20Jaipur%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1680000000000!5m2!1sen!2sin"
+          allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo">
+          <div class="logo-icon"><i class="fas fa-plus"></i></div>
+          MediCare Premier
+        </div>
+        <p>Committed to excellence in healthcare delivery, innovation in medical science, and compassion in patient care.</p>
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="#services"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> Our Services</a></li>
+          <li><a href="#about"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> About Us</a></li>
+          <li><a href="#doctors"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> Our Doctors</a></li>
+          <li><a href="#appointment"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> Book Appointment</a></li>
+          <li><a href="#contact"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Departments</h4>
+        <ul class="footer-links">
+          <li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> Cardiology</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> Neurology</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> Orthopedics</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> Pediatrics</a></li>
+          <li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i> Oncology</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Working Hours</h4>
+        <div class="footer-hours">
+          <div class="footer-hour"><span>Monday – Friday</span><span>8AM – 8PM</span></div>
+          <div class="footer-hour"><span>Saturday</span><span>9AM – 5PM</span></div>
+          <div class="footer-hour"><span>Sunday</span><span>10AM – 2PM</span></div>
+          <div class="footer-hour"><span>Emergency</span><span>24 / 7</span></div>
+        </div>
+        <a href="tel:+911234567890" class="btn btn-primary" style="margin-top:24px;font-size:0.85rem;padding:12px 20px;">
+          <i class="fas fa-phone"></i> Call Now
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 MediCare Premier Hospital. All rights reserved.</p>
+      <div style="display:flex;gap:20px;">
+        <a href="#" style="color:rgba(255,255,255,0.5);">Privacy Policy</a>
+        <a href="#" style="color:rgba(255,255,255,0.5);">Terms of Use</a>
+        <a href="#" style="color:rgba(255,255,255,0.5);">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</footer>
+ 
+<div class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fas fa-arrow-up"></i>
+</div>
+ 
+<script>
+// ── NAVBAR SCROLL ──
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+  document.getElementById('backTop').classList.toggle('visible', window.scrollY > 400);
+});
+document.getElementById('navbar').classList.add('scrolled');
+ 
+// ── MOBILE MENU ──
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('mobileMenu').classList.toggle('open');
+});
+function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
+ 
+// ── HERO SLIDER ──
+let currentSlide = 0;
+const totalSlides = 3;
+let slideTimer;
+ 
+function goToSlide(n) {
+  document.querySelectorAll('.slide').forEach((s,i) => s.classList.toggle('active', i===n));
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===n));
+  currentSlide = n;
+  clearInterval(slideTimer);
+  slideTimer = setInterval(() => changeSlide(1), 6000);
+}
+function changeSlide(dir) {
+  goToSlide((currentSlide + dir + totalSlides) % totalSlides);
+}
+slideTimer = setInterval(() => changeSlide(1), 6000);
+ 
+// ── TESTIMONIALS SLIDER ──
+let testiCurrent = 0;
+const testiCards = document.querySelectorAll('.testi-card');
+const testiDots = document.getElementById('testiDots');
+let testiTimer;
+ 
+testiCards.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'testi-dot' + (i===0?' active':'');
+  d.onclick = () => goToTesti(i);
+  testiDots.appendChild(d);
+});
+ 
+function goToTesti(n) {
+  document.getElementById('testiTrack').style.transform = `translateX(-${n*100}%)`;
+  document.querySelectorAll('.testi-dot').forEach((d,i) => d.classList.toggle('active', i===n));
+  testiCurrent = n;
+  clearInterval(testiTimer);
+  testiTimer = setInterval(() => testiNext(), 5000);
+}
+function testiNext() { goToTesti((testiCurrent+1) % testiCards.length); }
+function testiPrev() { goToTesti((testiCurrent-1+testiCards.length) % testiCards.length); }
+testiTimer = setInterval(() => testiNext(), 5000);
+ 
+// ── SCROLL ANIMATIONS ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+ 
+// ── APPOINTMENT FORM ──
+function submitForm() {
+  const inputs = document.querySelectorAll('#apptForm input[required], #apptForm select');
+  let valid = true;
+  inputs.forEach(i => {
+    if(!i.value.trim()) { i.style.borderColor='#e53e3e'; valid=false; }
+    else i.style.borderColor='';
+  });
+  if(!valid) return;
+  document.getElementById('apptForm').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'block';
+}
+function resetForm() {
+  document.getElementById('apptForm').style.display = 'block';
+  document.getElementById('formSuccess').style.display = 'none';
+  document.querySelectorAll('#apptForm input, #apptForm select, #apptForm textarea').forEach(i => i.value='');
+}
+</script>
+</body>
+</html>
+ 
